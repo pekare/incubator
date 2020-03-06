@@ -16,11 +16,15 @@ services:
       - "/mnt/cache/appdata/traefik/config:/etc/traefik"
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
 
-  whoami:
-    image: "containous/whoami"
+  SERVICE:
+    image: "something/SERVICE"
     container_name: "simple-service"
     labels:
-      - "traefik.enable=true"
-      - "traefik.http.routers.CHANGME.rule=Host(`whoami.mydomain.com`)"
-      - "traefik.http.routers.CHANGME.entrypoints=websecure"
-      - "traefik.http.routers.CHANGME.tls.certresolver=gandi"
+      - traefik.enable=true
+      - traefik.http.routers.SERVICE-web.entrypoints=web
+      - traefik.http.routers.SERVICE-web.rule=Host(`SERVICE.domain.com`)
+      - traefik.http.routers.SERVICE-web.middlewares=SERVICE-redirect
+      - traefik.http.middlewares.SERVICE-redirect.redirectscheme.scheme=https
+      - traefik.http.routers.SERVICE-websecure.entrypoints=websecure
+      - traefik.http.routers.SERVICE-websecure.rule=Host(`SERVICE.domain.com`)
+      - traefik.http.routers.SERVICE-websecure.tls.certresolver=gandi
