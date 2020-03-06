@@ -13,6 +13,10 @@
 [log]
   level = "info"
 
+[accessLog]
+  filePath = "/etc/traefik/access.log"
+  bufferingSize = 100
+
 [providers]
   [providers.docker]
     exposedByDefault = false
@@ -26,5 +30,4 @@
       storage = "/letsencrypt/acme.json"
       [certificatesResolvers.gandi.acme.dnsChallenge]
         provider = "gandiv5"
-        delayBeforeCheck = 0
         resolvers = ["1.1.1.1:53", "8.8.8.8:53"]
