@@ -4,4 +4,27 @@
 
   [entryPoints.websecure]
     address = ":443"
-    
+
+[api]
+  insecure = true
+  dashboard = true
+  debug = true
+
+[log]
+  level = "info"
+
+[providers]
+  [providers.docker]
+    exposedByDefault = false
+    network = "proxynet"
+
+[certificatesResolvers]
+  [certificatesResolvers.gandi]
+    [certificatesResolvers.gandi.acme]
+      email = "EMAIL"
+      caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
+      storage = "/letsencrypt/acme.json"
+      [certificatesResolvers.gandi.acme.dnsChallenge]
+        provider = "gandiv5"
+        delayBeforeCheck = 0
+        resolvers = ["1.1.1.1:53", "8.8.8.8:53"]
