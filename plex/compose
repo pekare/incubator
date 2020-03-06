@@ -11,11 +11,12 @@
       - TZ=Europe/Stockholm
       - PLEX_UID=99
       - PLEX_GID=100
-      - PLEX_CLAIM=${PLEX_CLAIM}
-      - HOSTNAME=plex.example.com
-      - ADVERTISE_IP=https://plex.example.com
+      - PLEX_CLAIM=CLAIM
+      - HOSTNAME=plex.domain.com
+      - ADVERTISE_IP=https://plex.domain.com
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=proxy"
-      - "traefik.port=32400"
-      - "traefik.frontend.rule=Host:plex.${DOMAIN_NAME}"
+      - traefik.enable=true
+      - traefik.http.routers.plex-websecure.entrypoints=plex
+      - traefik.http.routers.plex-websecure.rule=Host(`plex.domain.com`)
+      - traefik.http.routers.plex-websecure.tls.certresolver=gandi
+      - traefik.http.services.plex-websecure.loadbalancer.server.port=32400
