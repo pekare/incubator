@@ -5,9 +5,6 @@
   [entryPoints.websecure]
     address = ":443"
 
-  [entryPoints.plex]
-    address = ":32400"
-
 [api]
   insecure = true
   dashboard = true
