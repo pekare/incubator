@@ -1,9 +1,8 @@
   plexmediaserver:
     image: plexinc/pms-docker:latest
     container_name: plexmediaserver
-    restart: unless-stopped
     networks:
-      - proxynet
+      - br0 net with static ip
     volumes:
       - /mnt/cache/appdata/plexmediaserver/config:/config
       - /mnt/user/media:/data
@@ -13,10 +12,5 @@
       - PLEX_GID=100
       - PLEX_CLAIM=CLAIM
       - HOSTNAME=plex.domain.com
-      - ADVERTISE_IP=https://plex.domain.com
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.plex-websecure.entrypoints=plex
-      - traefik.http.routers.plex-websecure.rule=Host(`plex.domain.com`)
-      - traefik.http.routers.plex-websecure.tls.certresolver=gandi
-      - traefik.http.services.plex-websecure.loadbalancer.server.port=32400
+      - ADVERTISE_IP=https://plex.domain.com:32400
+
