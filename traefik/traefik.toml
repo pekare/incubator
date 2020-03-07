@@ -22,7 +22,7 @@
   [certificatesResolvers.gandi]
     [certificatesResolvers.gandi.acme]
       email = "EMAIL"
-      caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
+#      caServer = "https://acme-staging-v02.api.letsencrypt.org/directory"
       storage = "/letsencrypt/acme.json"
       [certificatesResolvers.gandi.acme.dnsChallenge]
         provider = "gandiv5"
