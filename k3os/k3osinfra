@@ -1,9 +1,33 @@
 ssh_authorized_keys:
 - github:pekare
+write_files:
+- encoding: ""
+  content: |-
+    [service_eth0]
+    Domain=peka.re
+    AutoConnect=true
+    IPv4.method=manual
+    IPv6.method=off
+    IPv6.privacy=disabled
+    IPv4.netmask_prefixlen=24
+    IPv4.local_address=10.0.11.91
+    IPv4.gateway=10.0.11.254
+    Timeservers=10.0.11.253
+    Nameservers=10.0.11.253;
+  owner: root
+  path: /var/lib/connman/eth0.config
+  permissions: '0700'
+- encoding: ""
+  content: |-
+    k3osinfra.peka.re
+  owner: root
+  path: /var/lib/rancher/k3os/hostname
+  permissions: '0755'
+
 
 k3os:
   ks3_args:
   - server
-  - "--node-name=k3osinfra"
+  - "--node-name=k3osinfra.peka.re"
   labels:
     plan.upgrade.cattle.io/k3os-latest: enabled
