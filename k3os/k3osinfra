@@ -13,7 +13,7 @@ write_files:
     ETH0=$(connmanctl services | awk '{ print $3 }' | while read -r s1; do connmanctl services $s1 | grep -q "eth0" && echo "$s1"; done)
     write_log "eth0 is bound to: ${ETH0}"
     write_log "Setting up manual net config..."
-    connmanctl config $ETH0 --ipv4 manual 10.0.11.91 255.255.255.0 10.0.11.254 --nameservers 10.0.11.253
+    connmanctl config $ETH0 --ipv4 manual 10.0.11.90 255.255.255.0 10.0.11.254 --nameservers 10.0.11.253
     connmanctl config $ETH0 --domains peka.re
     connmanctl config $ETH0 --timeservers 10.0.11.253  # keeps .1 as optional ntp server but prefers .4
     connmanctl config $ETH0 --ipv6 off
