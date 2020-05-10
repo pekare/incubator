@@ -1,6 +1,15 @@
-Verify DDA with:
+# Enable
+## Verify DDA
 https://github.com/MicrosoftDocs/Virtualization-Documentation/blob/live/hyperv-tools/DiscreteDeviceAssignment/SurveyDDA.ps1
-Disable the device with device manager.
+
+## Find PCI address
+### Find device classes
+Get-PnpDevice
+### Get device address
+$Devices = Get-PnpDevice | Where-Object {$_.Class -eq "SCSIAdapter"}
+$Devices | ft -AutoSize
+
+## Disable the device with device manager.
 
 Configure the “Automatic Stop Action” of a VM to TurnOff by executing
 Set-VM -Name VMName -AutomaticStopAction TurnOff
@@ -15,3 +24,7 @@ Disable dynamic memory for VM.
 
 Assigning the Device to the Guest VM
 Add-VMAssignableDevice -LocationPath $locationPath -VMName VMName
+
+# Disable
+Remove-VMAssignableDevice -LocationPath $locationPath -VMName VMName
+Mount-VMHostAssignableDevice -LocationPath $locationPath
