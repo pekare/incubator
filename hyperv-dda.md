@@ -55,7 +55,7 @@ Add-VMAssignableDevice -LocationPath $LocationPath -VMName $VMName
 
 # Disable
 ```
-Remove-VMAssignableDevice -LocationPath $LocationPath -VMName VMName
+Remove-VMAssignableDevice -LocationPath $LocationPath -VMName $VMName
 Mount-VMHostAssignableDevice -LocationPath $LocationPath
 Enable-PnpDevice -InstanceId $InstanceID
 ```
