@@ -4,20 +4,37 @@ https://github.com/MicrosoftDocs/Virtualization-Documentation/blob/live/hyperv-t
 
 ## Find PCI address
 ### Find device classes
+```
 Get-PnpDevice
+```
+
 ### Get device instanceid
+```
 $Devices = Get-PnpDevice | Where-Object {$_.Class -eq "SCSIAdapter"}
-$Devices | ft -AutoSize
-### Get localtionpath for device
-$DeviceDismount = Get-PnpDeviceProperty DEVPKEY_Device_LocationPaths -InstanceId "???"
+$Devices | ft -AutoSize 
+$InstanceID = "???"
+```
 
-## Disable the device with device manager.
+### Get locationpath for device
+```
+$DeviceToDismount = Get-PnpDeviceProperty DEVPKEY_Device_LocationPaths -InstanceId $InstanceID
+$LocationPath = ($DeviceToDismount).data[0]
+$LocationPath
+```
 
-Configure the “Automatic Stop Action” of a VM to TurnOff by executing
-Set-VM -Name VMName -AutomaticStopAction TurnOff
+## Disable the device with device manager
+```
+Disable-PnpDevice -InstanceId $InstanceID
+```
+
+## Configure the “Automatic Stop Action” of a VM to TurnOff by executing
+```
+$VMName = "???"
+Set-VM -Name $VMName -AutomaticStopAction TurnOff
+```
 
 Enable Write-Combining on the CPU
-Set-VM -GuestControlledCacheTypes $true -VMName VMName
+Set-VM -GuestControlledCacheTypes $true -VMName $VMName
 
 Dismount (append -force flag if it fails)
 Dismount-VMHostAssignableDevice -LocationPath $locationPath
@@ -28,5 +45,5 @@ Assigning the Device to the Guest VM
 Add-VMAssignableDevice -LocationPath $locationPath -VMName VMName
 
 # Disable
-Remove-VMAssignableDevice -LocationPath $locationPath -VMName VMName
-Mount-VMHostAssignableDevice -LocationPath $locationPath
+Remove-VMAssignableDevice -LocationPath $LocationPath -VMName VMName
+Mount-VMHostAssignableDevice -LocationPath $LocationPath
