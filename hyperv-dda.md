@@ -38,16 +38,24 @@ Set-VM -Name $VMName -AutomaticStopAction TurnOff
 Set-VM -GuestControlledCacheTypes $true -VMName $VMName
 ```
 
-## Dismount device from host (append -force flag if it fails)
+## Dismount device from host (be careful of -force, it might affect host system)
 ```
-Dismount-VMHostAssignableDevice -LocationPath $LocationPath
+Dismount-VMHostAssignableDevice -LocationPath $LocationPath -force
 ```
 
-Disable dynamic memory for VM.
+## Disable dynamic memory for VM
+```
+Set-VMMemory -VMName $VMName -DynamicMemoryEnabled 0
+```
 
-Assigning the Device to the Guest VM
-Add-VMAssignableDevice -LocationPath $locationPath -VMName VMName
+## Assigning the Device to the Guest VM
+```
+Add-VMAssignableDevice -LocationPath $LocationPath -VMName $VMName
+```
 
 # Disable
+```
 Remove-VMAssignableDevice -LocationPath $LocationPath -VMName VMName
 Mount-VMHostAssignableDevice -LocationPath $LocationPath
+Enable-PnpDevice -InstanceId $InstanceID
+```
