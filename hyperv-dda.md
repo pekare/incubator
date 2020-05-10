@@ -5,9 +5,11 @@ https://github.com/MicrosoftDocs/Virtualization-Documentation/blob/live/hyperv-t
 ## Find PCI address
 ### Find device classes
 Get-PnpDevice
-### Get device address
+### Get device instanceid
 $Devices = Get-PnpDevice | Where-Object {$_.Class -eq "SCSIAdapter"}
 $Devices | ft -AutoSize
+### Get localtionpath for device
+$DeviceDismount = Get-PnpDeviceProperty DEVPKEY_Device_LocationPaths -InstanceId "???"
 
 ## Disable the device with device manager.
 
