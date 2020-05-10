@@ -33,11 +33,15 @@ $VMName = "???"
 Set-VM -Name $VMName -AutomaticStopAction TurnOff
 ```
 
-Enable Write-Combining on the CPU
+## Enable Write-Combining on the CPU
+```
 Set-VM -GuestControlledCacheTypes $true -VMName $VMName
+```
 
-Dismount (append -force flag if it fails)
-Dismount-VMHostAssignableDevice -LocationPath $locationPath
+## Dismount device from host (append -force flag if it fails)
+```
+Dismount-VMHostAssignableDevice -LocationPath $LocationPath
+```
 
 Disable dynamic memory for VM.
 
