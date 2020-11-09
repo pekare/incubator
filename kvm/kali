@@ -1,0 +1,13 @@
+sudo mkdir /opt/vms/kali
+sudo qemu-img create -f qcow2 /opt/vms/kali/disk0.qcow2 50G
+virt-install \
+--name kali \
+--vcpus 2 \
+--memory 4096 \
+--noautoconsole \
+--graphics vnc,listen=0.0.0.0 \
+--disk /opt/vms/kali/disk0.qcow2,size=50,format=qcow2 \
+--autostart \
+--os-variant debiantesting \
+--cdrom /opt/isos/kali-linux-2020.3-installer-amd64.iso \
+--network bridge=br15,model=virtio
