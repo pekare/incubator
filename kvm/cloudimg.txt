@@ -1,0 +1,5 @@
+wget https://cloud-images.ubuntu.com/groovy/current/groovy-server-cloudimg-amd64-disk-kvm.img
+qemu-img info groovy-server-cloudimg-amd64-disk-kvm.img
+sudo mv groovy-server-cloudimg-amd64-disk-kvm.img /opt/isos/cloud/
+
+sudo mkdir /opt/vms/testing
