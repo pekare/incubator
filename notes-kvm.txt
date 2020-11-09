@@ -53,6 +53,10 @@ network:
       dhcp4: no
       dhcp6: no
       interfaces: [ vlan14 ]
+    br15:
+      dhcp4: no
+      dhcp6: no
+      interfaces: [ vlan15 ]
   vlans:
     vlan10:
       id: 10
@@ -76,6 +80,11 @@ network:
       dhcp6: no
     vlan14:
       id: 14
+      link: enp2s0f0
+      dhcp4: no
+      dhcp6: no
+    vlan15:
+      id: 15
       link: enp2s0f0
       dhcp4: no
       dhcp6: no
@@ -122,6 +131,13 @@ cat <<EOF > br14.xml
   <bridge name="br14"/>
 </network>
 EOF
+cat <<EOF > br15.xml
+<network>
+  <name>br15</name>
+  <forward mode="bridge"/>
+  <bridge name="br15"/>
+</network>
+EOF
 
 # create libvirt network using existing host bridge
 virsh net-define br10.xml
@@ -139,6 +155,9 @@ virsh net-autostart br13
 virsh net-define br14.xml
 virsh net-start br14
 virsh net-autostart br14
+virsh net-define br15.xml
+virsh net-start br15
+virsh net-autostart br15
 
 # state should be active, autostart, and persistent
 virsh net-list --all
@@ -161,6 +180,7 @@ virt-install \
 --network bridge=br12,model=virtio \
 --network bridge=br13,model=virtio \
 --network bridge=br14,model=virtio \
+--network bridge=br15,model=virtio \
 --debug
 
 
