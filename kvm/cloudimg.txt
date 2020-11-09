@@ -3,3 +3,35 @@ qemu-img info groovy-server-cloudimg-amd64-disk-kvm.img
 sudo mv groovy-server-cloudimg-amd64-disk-kvm.img /opt/isos/cloud/
 
 sudo mkdir /opt/vms/testing
+sudo cp /opt/isos/cloud/groovy-server-cloudimg-amd64-disk-kvm.img /opt/vms/testing/disk0.qcow2
+sudo qemu-img resize /opt/vms/testing/disk0.qcow2 25G
+
+cat <<EOF > user-data
+#cloud-config
+users:
+  - name: carl
+    ssh-authorized-keys:
+      - ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAgEAg+1+84i+HOmcsaiJlaFPF9lsNTkKbIylq0HTbAX66fuiXXq0iQID7OxaiPzCd633ZxhWjp1AQ33DN0MyBXMc+I/D9tY70JLm080Uq92lf7Me3fnoa9bgZ3LS1/tAeYANgCA3cdEwbYvdlowNZOiuAOvBzBNQKZ8uy4xgcyH43H9Y/08BszzuE3nh+1Cg6BYl0b+0L0ebF4gZ3zcE5+kndeWfXz8fubbO1dcjX+kAzRIiQsUIyPOf8OwuFMKfc2I/w2UL7yB50+h7pRrffVUUjgq9CvAjR2gkYUT5vt4TohEXWiYajeBGIwmuQy5MxYXKa2FCwwmlYdfNuuOgYeps4drBd6Qc59Vmh7aAiCBn1ccRGxpeGAbfhe+Rj5OBFStMWoI7ya7m071oWNebcQjqnWSu/xvCibFguEnMbotXjWl5ojKc6c33fG5eJukeJqYD3frf9IcBY8Yt9o8rOYK7vQnM9lkmDYoX7/yfDIo2PNAvFn9sPERGnLcJDuMOhylSp02qvnJMXenbAbK7wuu6ZDKwelZyY46q2XqNccmJdq/3Ed12BC3HQsYSUgqsTB4OgKzT1w+vANaDJ8WVF9RFRB8WjKDwzs7g79oeT1+heZ/8N53FnuGttC2IO6uvold7jJlkHv3kFIQ0LMCKQZTndVTJpwE+owdnrSpB1Ssevd0= 20191227
+    sudo: ['ALL=(ALL) NOPASSWD:ALL']
+    groups: sudo
+    shell: /bin/bash
+runcmd:
+  - echo "AllowUsers carl" >> /etc/ssh/sshd_config
+  - restart ssh
+EOF
+
+sudo genisoimage -output cidata.iso -volid cidata -joliet -rock user-data
+sudo mv cidata.iso /opt/isos/
+
+virt-install \
+--name testing \
+--vcpus 1 \
+--memory 2048 \
+--noautoconsole \
+--graphics vnc,listen=0.0.0.0 \
+--disk /opt/vms/testing/disk0.qcow2,size=25,format=qcow2 \
+--autostart \
+--os-variant ubuntu20.10 \
+--cdrom /opt/isos/cidata.iso \
+--network bridge=br15,model=virtio \
+--import
