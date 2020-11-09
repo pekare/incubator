@@ -1,0 +1,168 @@
+sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virtinst libosinfo-bin
+
+sudo usermod -aG libvirt $USER
+sudo usermod -aG kvm $USER
+
+sudo lvcreate -L 50G -n kvm-isos ubuntu-vg
+sudo lvcreate -l 100%FREE -n kvm-vms ubuntu-vg
+sudo mkfs -t ext4 /dev/ubuntu-vg/kvm-isos
+sudo mkfs -t ext4 /dev/ubuntu-vg/kvm-vms
+sudo mkdir /opt/isos
+sudo mkdir /opt/vms
+ls /dev/disk/by-id/
+sudo lvdisplay
+sudo vi /etc/fstab
+/dev/disk/by-id/dm-uuid-LVM-uFLo9U2yaUHEiy59fE2L9jqJrhSha3weXIZxn29yg9UX2jhjDikr2TMlpdrUE97r /opt/isos ext4 defaults 0 0
+/dev/disk/by-id/dm-uuid-LVM-uFLo9U2yaUHEiy59fE2L9jqJrhSha3werVQOZ8c5Mu2X6YxCqPqtex4KrelEqLqm /opt/vms ext4 defaults 0 0
+mount -a
+
+
+sudo mv /etc/netplan/00-installer-config.yaml /etc/netplan/00-installer-config.yaml.orig
+sudo vi /etc/netplan/00-br-vlans.yaml
+
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    enp2s0f0:
+      dhcp4: no
+      dhcp6: no
+  bridges:
+    br10:
+      dhcp4: no
+      dhcp6: no
+      interfaces: [ vlan10 ]
+    br11:
+      dhcp4: no
+      dhcp6: no
+      interfaces: [ vlan11 ]
+      addresses: [ 10.0.11.3/24 ]
+      gateway4: 10.0.11.254
+      nameservers:
+        addresses:
+          - "10.0.11.254"
+    br12:
+      dhcp4: no
+      dhcp6: no
+      interfaces: [ vlan12 ]
+    br13:
+      dhcp4: no
+      dhcp6: no
+      interfaces: [ vlan13 ]
+    br14:
+      dhcp4: no
+      dhcp6: no
+      interfaces: [ vlan14 ]
+  vlans:
+    vlan10:
+      id: 10
+      link: enp2s0f0
+      dhcp4: no
+      dhcp6: no
+    vlan11:
+      id: 11
+      link: enp2s0f0
+      dhcp4: no
+      dhcp6: no
+    vlan12:
+      id: 12
+      link: enp2s0f0
+      dhcp4: no
+      dhcp6: no
+    vlan13:
+      id: 13
+      link: enp2s0f0
+      dhcp4: no
+      dhcp6: no
+    vlan14:
+      id: 14
+      link: enp2s0f0
+      dhcp4: no
+      dhcp6: no
+
+sudo virsh net-destroy default
+sudo virsh net-undefine default
+
+
+sudo netplan generate 
+sudo netplan --debug apply
+
+cat <<EOF > br10.xml
+<network>
+  <name>br10</name>
+  <forward mode="bridge"/>
+  <bridge name="br10"/>
+</network>
+EOF
+cat <<EOF > br11.xml
+<network>
+  <name>br11</name>
+  <forward mode="bridge"/>
+  <bridge name="br11"/>
+</network>
+EOF
+cat <<EOF > br12.xml
+<network>
+  <name>br12</name>
+  <forward mode="bridge"/>
+  <bridge name="br12"/>
+</network>
+EOF
+cat <<EOF > br13.xml
+<network>
+  <name>br13</name>
+  <forward mode="bridge"/>
+  <bridge name="br13"/>
+</network>
+EOF
+cat <<EOF > br14.xml
+<network>
+  <name>br14</name>
+  <forward mode="bridge"/>
+  <bridge name="br14"/>
+</network>
+EOF
+
+# create libvirt network using existing host bridge
+virsh net-define br10.xml
+virsh net-start br10
+virsh net-autostart br10
+virsh net-define br11.xml
+virsh net-start br11
+virsh net-autostart br11
+virsh net-define br12.xml
+virsh net-start br12
+virsh net-autostart br12
+virsh net-define br13.xml
+virsh net-start br13
+virsh net-autostart br13
+virsh net-define br14.xml
+virsh net-start br14
+virsh net-autostart br14
+
+# state should be active, autostart, and persistent
+virsh net-list --all
+
+
+sudo mkdir /opt/vms/pfsense
+sudo qemu-img create -f qcow2 /opt/vms/pfsense/disk0.qcow2 20G
+virt-install \
+--name pfsense \
+--vcpus 2 \
+--memory 1024 \
+--noautoconsole \
+--graphics vnc,listen=0.0.0.0 \
+--disk /opt/vms/pfsense/disk0.qcow2,size=20,format=qcow2 \
+--autostart \
+--os-variant freebsd11.3 \
+--cdrom /opt/isos/pfSense-CE-2.4.5-RELEASE-p1-amd64.iso \
+--network bridge=br10,model=virtio \
+--network bridge=br11,model=virtio \
+--network bridge=br12,model=virtio \
+--network bridge=br13,model=virtio \
+--network bridge=br14,model=virtio \
+--debug
+
+
+sudo ufw enable
+sudo ufw allow ssh
