@@ -23,6 +23,10 @@ ssh_pwauth: false
 disable_root: true
 packages:
   - qemu-guest-agent
+# restart dhclient to propagate hostname to dhcp
+runcmd: 
+  - dhclient -r
+  - dhclient
 # written to /var/log/cloud-init-output.log
 final_message: "The system is finally up, after $UPTIME seconds"
 EOF
