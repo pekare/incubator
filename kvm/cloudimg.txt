@@ -4,16 +4,17 @@ wget https://cloud-images.ubuntu.com/groovy/current/groovy-server-cloudimg-amd64
 sudo mv groovy-server-cloudimg-amd64.img /opt/isos/cloud/
 
 sudo mkdir /opt/vms/testing
-sudo cp /opt/isos/cloud/groovy-server-cloudimg-amd64.img /opt/vms/testing/disk0.qcow2
-sudo qemu-img resize /opt/vms/testing/disk0.qcow2 25G
+sudo cp /opt/isos/cloud/groovy-server-cloudimg-amd64.img /opt/vms/media/disk0.qcow2
+sudo qemu-img resize /opt/vms/media/disk0.qcow2 25G
 
 cat <<EOF > cloud_init.cfg
 #cloud-config
-hostname: testing
+hostname: media
 users:
   - name: carl
     sudo: ALL=(ALL) NOPASSWD:ALL
-    groups: users, admin
+    groups: users
+    shell: /bin/bash
     lock_passwd: false
     ssh-authorized-keys:
       - "ssh-rsa AAAAB3NzaC1yc2EAAAABJQAAAgEAg+1+84i+HOmcsaiJlaFPF9lsNTkKbIylq0HTbAX66fuiXXq0iQID7OxaiPzCd633ZxhWjp1AQ33DN0MyBXMc+I/D9tY70JLm080Uq92lf7Me3fnoa9bgZ3LS1/tAeYANgCA3cdEwbYvdlowNZOiuAOvBzBNQKZ8uy4xgcyH43H9Y/08BszzuE3nh+1Cg6BYl0b+0L0ebF4gZ3zcE5+kndeWfXz8fubbO1dcjX+kAzRIiQsUIyPOf8OwuFMKfc2I/w2UL7yB50+h7pRrffVUUjgq9CvAjR2gkYUT5vt4TohEXWiYajeBGIwmuQy5MxYXKa2FCwwmlYdfNuuOgYeps4drBd6Qc59Vmh7aAiCBn1ccRGxpeGAbfhe+Rj5OBFStMWoI7ya7m071oWNebcQjqnWSu/xvCibFguEnMbotXjWl5ojKc6c33fG5eJukeJqYD3frf9IcBY8Yt9o8rOYK7vQnM9lkmDYoX7/yfDIo2PNAvFn9sPERGnLcJDuMOhylSp02qvnJMXenbAbK7wuu6ZDKwelZyY46q2XqNccmJdq/3Ed12BC3HQsYSUgqsTB4OgKzT1w+vANaDJ8WVF9RFRB8WjKDwzs7g79oeT1+heZ/8N53FnuGttC2IO6uvold7jJlkHv3kFIQ0LMCKQZTndVTJpwE+owdnrSpB1Ssevd0= 20191227"
@@ -27,18 +28,19 @@ final_message: "The system is finally up, after $UPTIME seconds"
 EOF
 
 # insert network and cloud config into seed image
-sudo cloud-localds -v /opt/vms/testing/seed.qcow2 cloud_init.cfg
+sudo cloud-localds -v /opt/vms/media/seed.qcow2 cloud_init.cfg
 
 
 virt-install \
---name testing \
---vcpus 1 \
---memory 2048 \
+--name media \
+--vcpus 4 \
+--memory 8192 \
 --noautoconsole \
 --graphics vnc,listen=0.0.0.0 \
---disk /opt/vms/testing/disk0.qcow2,size=25,format=qcow2 \
+--disk /opt/vms/media/disk0.qcow2,size=25,format=qcow2 \
+--disk /mnt/external/media/disk1.qcow2,size=3072,format=qcow2 \
 --autostart \
 --os-variant ubuntu20.10 \
---cdrom /opt/vms/testing/seed.qcow2 \
---network bridge=br15,model=virtio \
+--cdrom /opt/vms/media/seed.qcow2 \
+--network bridge=br13,model=virtio \
 --boot hd
