@@ -3,7 +3,7 @@ sudo apt install cloud-image-utils
 wget https://cloud-images.ubuntu.com/groovy/current/groovy-server-cloudimg-amd64.img
 sudo mv groovy-server-cloudimg-amd64.img /opt/isos/cloud/
 
-sudo mkdir /opt/vms/testing
+sudo mkdir /opt/vms/media
 sudo cp /opt/isos/cloud/groovy-server-cloudimg-amd64.img /opt/vms/media/disk0.qcow2
 sudo qemu-img resize /opt/vms/media/disk0.qcow2 25G
 
@@ -34,6 +34,7 @@ EOF
 # insert network and cloud config into seed image
 sudo cloud-localds -v /opt/vms/media/seed.qcow2 cloud_init.cfg
 
+sudo qemu-img create -f qcow2 /mnt/external/media/disk1.qcow2 3072G
 
 virt-install \
 --name media \
