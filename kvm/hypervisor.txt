@@ -9,16 +9,13 @@ sudo mkfs -t ext4 /dev/ubuntu-vg/kvm-isos
 sudo mkfs -t ext4 /dev/ubuntu-vg/kvm-vms
 sudo mkdir /opt/isos
 sudo mkdir /opt/vms
-ls /dev/disk/by-id/
-sudo lvdisplay
+echo "/dev/disk/by-id/$(ls -la /dev/disk/by-id/ | grep dm-1 | grep uuid | awk '{print $9}') /opt/isos ext4 defaults 0 0 
+/dev/disk/by-id/$(ls -la /dev/disk/by-id/ | grep dm-2 | grep uuid | awk '{print $9}') /opt/vms ext4 defaults 0 0" 
 sudo vi /etc/fstab
-/dev/disk/by-id/dm-uuid-LVM-uFLo9U2yaUHEiy59fE2L9jqJrhSha3weXIZxn29yg9UX2jhjDikr2TMlpdrUE97r /opt/isos ext4 defaults 0 0
-/dev/disk/by-id/dm-uuid-LVM-uFLo9U2yaUHEiy59fE2L9jqJrhSha3werVQOZ8c5Mu2X6YxCqPqtex4KrelEqLqm /opt/vms ext4 defaults 0 0
 mount -a
 
 sudo mv /etc/netplan/00-installer-config.yaml /etc/netplan/00-installer-config.yaml.orig
 sudo vi /etc/netplan/00-br-vlans.yaml
-
 network:
   version: 2
   renderer: networkd
@@ -88,10 +85,11 @@ network:
       dhcp4: no
       dhcp6: no
 
+# Destroy default kvm networks
 sudo virsh net-destroy default
 sudo virsh net-undefine default
 
-
+# Apply networking configuration
 sudo netplan generate 
 sudo netplan --debug apply
 
@@ -161,7 +159,8 @@ virsh net-autostart br15
 # state should be active, autostart, and persistent
 virsh net-list --all
 
-
+sudo wget https://frafiles.pfsense.org/mirror/downloads/pfSense-CE-2.4.5-RELEASE-p1-amd64.iso.gz -O /opt/isos/pfSense-CE-2.4.5-RELEASE-p1-amd64.iso.gz
+sudo gunzip /opt/isos/pfSense-CE-2.4.5-RELEASE-p1-amd64.iso.gz
 sudo mkdir /opt/vms/pfsense
 sudo qemu-img create -f qcow2 /opt/vms/pfsense/disk0.qcow2 20G
 virt-install \
