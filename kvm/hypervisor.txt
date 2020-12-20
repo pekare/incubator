@@ -90,8 +90,9 @@ sudo virsh net-destroy default
 sudo virsh net-undefine default
 
 # Apply networking configuration
-sudo netplan generate 
-sudo netplan --debug apply
+# sudo netplan generate 
+# sudo netplan --debug apply
+reboot
 
 cat <<EOF > br10.xml
 <network>
