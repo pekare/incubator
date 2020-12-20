@@ -1,12 +1,12 @@
 sudo apt install cloud-image-utils
 
-wget https://cloud-images.ubuntu.com/releases/focal/release-20201210/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img
+wget https://cloud-images.ubuntu.com/releases/focal/release-20201210/ubuntu-20.04-server-cloudimg-amd64.img
 sudo mkdir -p /opt/isos/cloud
-sudo mv ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img /opt/isos/cloud/
+sudo mv ubuntu-20.04-server-cloudimg-amd64.img /opt/isos/cloud/
 
 VM=infra
 sudo mkdir /opt/vms/$VM
-sudo cp /opt/isos/cloud/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img /opt/vms/$VM/disk0.qcow2
+sudo cp /opt/isos/cloud/ubuntu-20.04-server-cloudimg-amd64.img /opt/vms/$VM/disk0.qcow2
 sudo qemu-img resize /opt/vms/$VM/disk0.qcow2 25G
 
 cat <<EOF > cloud_init.cfg
