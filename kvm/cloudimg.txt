@@ -1,12 +1,12 @@
 sudo apt install cloud-image-utils
 
-wget https://cloud-images.ubuntu.com/groovy/current/groovy-server-cloudimg-amd64.img
-sudo mv groovy-server-cloudimg-amd64.img /opt/isos/cloud/
-
+wget https://cloud-images.ubuntu.com/releases/focal/release-20201210/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img
+sudo mkdir -p /opt/isos/cloud
+sudo mv ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img /opt/isos/cloud/
 
 VM=infra
 sudo mkdir /opt/vms/$VM
-sudo cp /opt/isos/cloud/groovy-server-cloudimg-amd64.img /opt/vms/$VM/disk0.qcow2
+sudo cp /opt/isos/cloud/ubuntu-20.04-server-cloudimg-amd64-disk-kvm.img /opt/vms/$VM/disk0.qcow2
 sudo qemu-img resize /opt/vms/$VM/disk0.qcow2 25G
 
 cat <<EOF > cloud_init.cfg
@@ -36,18 +36,19 @@ EOF
 
 # insert network and cloud config into seed image
 sudo cloud-localds -v /opt/vms/$VM/seed.qcow2 cloud_init.cfg
+rm cloud_init.cfg
 
-sudo qemu-img create -f qcow2 /mnt/external/$VM/disk1.qcow2 3072G
+# sudo qemu-img create -f qcow2 /mnt/external/$VM/disk1.qcow2 3072G
 
-virt-install \
---name $VM \
---vcpus 2 \
---memory 4048 \
---noautoconsole \
---graphics vnc,listen=0.0.0.0 \
---disk /opt/vms/$VM/disk0.qcow2,size=25,format=qcow2 \
---autostart \
---os-variant ubuntu20.10 \
---cdrom /opt/vms/$VM/seed.qcow2 \
---network bridge=br11,model=virtio \
---boot hd
+  virt-install \
+  --name $VM \
+  --vcpus 2 \
+  --memory 4048 \
+  --noautoconsole \
+  --graphics vnc,listen=0.0.0.0 \
+  --disk /opt/vms/$VM/disk0.qcow2,size=25,format=qcow2 \
+  --autostart \
+  --os-variant ubuntu20.04 \
+  --cdrom /opt/vms/$VM/seed.qcow2 \
+  --network bridge=br11,model=virtio \
+  --boot hd
