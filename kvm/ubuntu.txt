@@ -1,6 +1,6 @@
 VM=infra
-OS=ubuntu20.04
-ISO=ubuntu-20.04.1-live-server-amd64.iso
+OS=ubuntu20.10
+ISO=ubuntu-20.10-live-server-amd64.iso
 VLAN=11
 
 sudo mkdir /opt/vms/$VM
