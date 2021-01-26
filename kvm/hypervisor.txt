@@ -25,94 +25,112 @@ sudo wget https://opnsense.c0urier.net/releases/20.7/OPNsense-20.7-OpenSSL-dvd-a
 sudo mv /etc/netplan/00-installer-config.yaml /etc/netplan/00-installer-config.yaml.orig
 sudo vi /etc/netplan/00-br-vlans-bond.yaml
 network:
-  version: 2
   renderer: networkd
-  ethernets:
-    eno1:
-      dhcp4: no
-      dhcp6: no
-    eno2:
-      dhcp4: no
-      dhcp6: no
-    eno3:
-      dhcp4: no
-      dhcp6: no
-      optional: true
-    eno4:
-      dhcp4: no
-      dhcp6: no
-      optional: true
+  version: 2
   bonds:
     bond0:
-      dhcp4: no
-      dhcp6: no
-      interfaces: [ eno1, eno2, eno3, eno4 ]
+      dhcp4: false
+      dhcp6: false
+      interfaces:
+      - eno1
+      - eno2
+      - eno3
+      - eno4
+      link-local: []
       parameters:
-        mode: 802.3ad
         lacp-rate: fast
         mii-monitor-interval: 100
         min-links: 2
-  vlans:
-    vlan10:
-      id: 10
-      link: bond0
-      dhcp4: no
-      dhcp6: no
-    vlan11:
-      id: 11
-      link: bond0
-      dhcp4: no
-      dhcp6: no
-    vlan12:
-      id: 12
-      link: bond0
-      dhcp4: no
-      dhcp6: no
-    vlan13:
-      id: 13
-      link: bond0
-      dhcp4: no
-      dhcp6: no
-    vlan14:
-      id: 14
-      link: bond0
-      dhcp4: no
-      dhcp6: no
-    vlan15:
-      id: 15
-      link: bond0
-      dhcp4: no
-      dhcp6: no
+        mode: 802.3ad
   bridges:
     br10:
-      dhcp4: no
-      dhcp6: no
-      interfaces: [ vlan10 ]
+      dhcp4: false
+      dhcp6: false
+      interfaces:
+      - vlan10
+      link-local: []
     br11:
-      dhcp4: no
-      dhcp6: no
-      interfaces: [ vlan11 ]
-      addresses: [ 10.0.11.4/24 ]
+      addresses:
+      - 10.0.11.4/24
+      dhcp4: false
+      dhcp6: false
       gateway4: 10.0.11.254
+      interfaces:
+      - vlan11
+      link-local: []
       nameservers:
         addresses:
-          - "10.0.11.254"
+        - 10.0.11.254
     br12:
-      dhcp4: no
-      dhcp6: no
-      interfaces: [ vlan12 ]
+      dhcp4: false
+      dhcp6: false
+      interfaces:
+      - vlan12
+      link-local: []
     br13:
-      dhcp4: no
-      dhcp6: no
-      interfaces: [ vlan13 ]
+      dhcp4: false
+      dhcp6: false
+      interfaces:
+      - vlan13
+      link-local: []
     br14:
-      dhcp4: no
-      dhcp6: no
-      interfaces: [ vlan14 ]
+      dhcp4: false
+      dhcp6: false
+      interfaces:
+      - vlan14
+      link-local: []
     br15:
-      dhcp4: no
-      dhcp6: no
-      interfaces: [ vlan15 ]
+      dhcp4: false
+      dhcp6: false
+      interfaces:
+      - vlan15
+      link-local: []
+  ethernets:
+    eno1:
+      dhcp4: false
+      dhcp6: false
+    eno2:
+      dhcp4: false
+      dhcp6: false
+    eno3:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+    eno4:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+  vlans:
+    vlan10:
+      dhcp4: false
+      dhcp6: false
+      id: 10
+      link: bond0
+    vlan11:
+      dhcp4: false
+      dhcp6: false
+      id: 11
+      link: bond0
+    vlan12:
+      dhcp4: false
+      dhcp6: false
+      id: 12
+      link: bond0
+    vlan13:
+      dhcp4: false
+      dhcp6: false
+      id: 13
+      link: bond0
+    vlan14:
+      dhcp4: false
+      dhcp6: false
+      id: 14
+      link: bond0
+    vlan15:
+      dhcp4: false
+      dhcp6: false
+      id: 15
+      link: bond0
 
 # Destroy default kvm networks
 sudo virsh net-destroy default
