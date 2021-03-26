@@ -1,8 +1,8 @@
 sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virtinst libosinfo-bin virt-top
-sudo lvcreate -L 50G -n kvm-isos vg0
-sudo lvcreate -l 100%FREE -n kvm-vms vg0
-sudo mkfs -t ext4 /dev/vg0/kvm-isos
-sudo mkfs -t ext4 /dev/vg0/kvm-vms
+sudo lvcreate -L 50G -n kvm-isos ubuntu-vg
+sudo lvcreate -l 100%FREE -n kvm-vms ubuntu-vg
+sudo mkfs -t ext4 /dev/ubuntu-vg/kvm-isos
+sudo mkfs -t ext4 /dev/ubuntu-vg/kvm-vms
 
 
 sudo usermod -aG libvirt $USER
@@ -15,12 +15,12 @@ sudo mkfs -t ext4 /dev/vg0/kvm-vms
 sudo mkdir /opt/isos
 sudo mkdir /opt/vms
 # check dm-X
-echo "/dev/disk/by-id/$(ls -la /dev/disk/by-id/ | grep dm-2| grep uuid | awk '{print $9}') /opt/isos ext4 defaults 0 0 
-/dev/disk/by-id/$(ls -la /dev/disk/by-id/ | grep dm-3 | grep uuid | awk '{print $9}') /opt/vms ext4 defaults 0 0" 
+echo "/dev/disk/by-id/$(ls -la /dev/disk/by-id/ | grep dm-1 | grep uuid | awk '{print $9}') /opt/isos ext4 defaults 0 0 
+/dev/disk/by-id/$(ls -la /dev/disk/by-id/ | grep dm-2 | grep uuid | awk '{print $9}') /opt/vms ext4 defaults 0 0" 
 sudo vi /etc/fstab
 mount -a
 
-sudo wget https://opnsense.c0urier.net/releases/20.7/OPNsense-20.7-OpenSSL-dvd-amd64.iso.bz2 -O /opt/isos/OPNsense-20.7-OpenSSL-dvd-amd64.iso.bz2
+sudo wget https://opnsense.c0urier.net/releases/21.1/OPNsense-21.1-OpenSSL-dvd-amd64.iso.bz2 -O /opt/isos/OPNsense-21.1-OpenSSL-dvd-amd64.iso.bz2
 
 sudo mv /etc/netplan/00-installer-config.yaml /etc/netplan/00-installer-config.yaml.orig
 sudo vi /etc/netplan/00-br-vlans-bond.yaml
