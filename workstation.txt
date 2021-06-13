@@ -33,3 +33,16 @@ sudo apt update
 sudo apt install code 
 
 sudo apt install xtightvncviewer
+
+sudo apt-get build-dep vagrant ruby-libvirt
+sudo apt-get install qemu qemu-kvm libvirt-daemon libvirt-daemon-system libvirt-clients bridge-utils ebtables dnsmasq-base virt-manager
+sudo apt-get install libxslt-dev libxml2-dev libvirt-dev zlib1g-dev ruby-dev
+sudo apt-get install libguestfs-tools
+
+curl -fsSL https://apt.releases.hashicorp.com/gpg | sudo apt-key add -
+sudo apt-add-repository "deb [arch=amd64] https://apt.releases.hashicorp.com $(lsb_release -cs) main"
+sudo apt-get update && sudo apt-get install vagrant
+vagrant plugin install vagrant-libvirt
+
+
+
