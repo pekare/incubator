@@ -1,3 +1,33 @@
+# Disk setup
+## Disk 1
+### / 50GB only on install
+
+# HPE drivers
+sudo vi /etc/apt/sources.list.d/mcp.list
+## Management Component Pack
+deb http://downloads.linux.hpe.com/SDR/repo/mcp focal/current non-free
+
+sudo -i
+curl https://downloads.linux.hpe.com/SDR/hpPublicKey2048.pub | apt-key add -
+curl https://downloads.linux.hpe.com/SDR/hpPublicKey2048_key1.pub | apt-key add -
+curl https://downloads.linux.hpe.com/SDR/hpePublicKey2048_key1.pub | apt-key add -
+exit
+
+sudo apt update && sudo apt install amsd -y
+
+## KVM
+
+
+# /mnt/fast 100%FREE
+
+# 2nd disk
+# luks + lvm
+# /mnt/large 100%FREE
+
+# Fix luks for boot disks
+# https://unix.stackexchange.com/questions/392284/using-a-single-passphrase-to-unlock-multiple-encrypted-disks-at-boot/392286#392286
+
+
 sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virtinst libosinfo-bin virt-top
 sudo lvcreate -L 50G -n kvm-isos ubuntu-vg
 sudo lvcreate -l 100%FREE -n kvm-vms ubuntu-vg
@@ -235,16 +265,6 @@ virt-install \
 sudo ufw enable
 sudo ufw allow ssh
 
-sudo vi /etc/apt/sources.list.d/mcp.list
-# HPE Management Component Pack
-deb http://downloads.linux.hpe.com/SDR/repo/mcp focal/current non-free
 
-sudo -i
-curl https://downloads.linux.hpe.com/SDR/hpPublicKey2048.pub | apt-key add -
-curl https://downloads.linux.hpe.com/SDR/hpPublicKey2048_key1.pub | apt-key add -
-curl https://downloads.linux.hpe.com/SDR/hpePublicKey2048_key1.pub | apt-key add -
-exit
-
-sudo apt update && sudo apt install amsd -y
 
 
