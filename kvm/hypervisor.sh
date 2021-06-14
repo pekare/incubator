@@ -51,6 +51,10 @@ sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils vir
 sudo usermod -aG libvirt $USER
 sudo usermod -aG kvm $USER
 
+virsh pool-define-as --name large --type dir --target /var/lib/libvirt/images-large
+virsh pool-autostart large
+virsh pool-start large
+
 #sudo lvcreate -L 50G -n kvm-isos vg0
 #sudo lvcreate -l 100%FREE -n kvm-vms vg0
 #sudo mkfs -t ext4 /dev/vg0/kvm-isos
@@ -251,6 +255,13 @@ virsh net-autostart br15
 virsh net-list --all
 
 rm br1*
+
+sudo ufw enable
+sudo ufw allow ssh
+
+
+
+
 
 sudo bzip2 -d /opt/isos/OPNsense-20.7-OpenSSL-dvd-amd64.iso.bz2
 sudo mkdir /opt/vms/opnsense
