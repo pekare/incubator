@@ -1,54 +1,67 @@
 # Disk setup
 ## Disk 1
-### / 50GB only on install
+### / 50GB on install
+### /var/lib/libvirt 100%FREE
 
 # HPE drivers
 sudo vi /etc/apt/sources.list.d/mcp.list
 ## Management Component Pack
-deb http://downloads.linux.hpe.com/SDR/repo/mcp focal/current non-free
-
+deb http://sudo vi /etc/fstab
+mount -adownloads.linux.hpe.com/SDR/repo/mcp focal/current non-free
 sudo -i
 curl https://downloads.linux.hpe.com/SDR/hpPublicKey2048.pub | apt-key add -
 curl https://downloads.linux.hpe.com/SDR/hpPublicKey2048_key1.pub | apt-key add -
 curl https://downloads.linux.hpe.com/SDR/hpePublicKey2048_key1.pub | apt-key add -
 exit
-
 sudo apt update && sudo apt install amsd -y
 
-## KVM
+# KVM
 
-
-# /mnt/fast 100%FREE
-
+## Storage 
 # 2nd disk
 # luks + lvm
-# /mnt/large 100%FREE
+# /var/lib/libvirt/images-large 100%FREE
+
+# create luks partition parted /dev/sdX1
+parted /dev/sdX
+(parted) mklabel gpt
+(parted) mkpart primary ext4 0% 100%
+# setup luks
+cryptsetup luksFormat /dev/sdX1
+cryptsetup luksOpen /dev/sdX1 large
+pvcreate /dev/mapper/large
+vgcreate large-vg /dev/mapper/large
+lvcreate -l 100%FREE large-vg -n images-large
+sudo mkfs -t ext4 /dev/large-vg/images-large
+sudo mkdir /var/lib/libvirt/images-large
+# echo "/dev/disk/by-id/$(ls -la /dev/disk/by-id/ | grep dm-1 | grep uuid | awk '{print $9}') /opt/isos ext4 defaults 0 0"
+sudo vi /etc/fstab
+mount -a
+
 
 # Fix luks for boot disks
 # https://unix.stackexchange.com/questions/392284/using-a-single-passphrase-to-unlock-multiple-encrypted-disks-at-boot/392286#392286
 
-
 sudo apt install qemu-kvm libvirt-daemon-system libvirt-clients bridge-utils virtinst libosinfo-bin virt-top
-sudo lvcreate -L 50G -n kvm-isos ubuntu-vg
-sudo lvcreate -l 100%FREE -n kvm-vms ubuntu-vg
-sudo mkfs -t ext4 /dev/ubuntu-vg/kvm-isos
-sudo mkfs -t ext4 /dev/ubuntu-vg/kvm-vms
-
+#sudo lvcreate -L 50G -n kvm-isos ubuntu-vg
+#sudo lvcreate -l 100%FREE -n kvm-vms ubuntu-vg
+#sudo mkfs -t ext4 /dev/ubuntu-vg/kvm-isos
+#sudo mkfs -t ext4 /dev/ubuntu-vg/kvm-vms
 
 sudo usermod -aG libvirt $USER
 sudo usermod -aG kvm $USER
 
-sudo lvcreate -L 50G -n kvm-isos vg0
-sudo lvcreate -l 100%FREE -n kvm-vms vg0
-sudo mkfs -t ext4 /dev/vg0/kvm-isos
-sudo mkfs -t ext4 /dev/vg0/kvm-vms
-sudo mkdir /opt/isos
-sudo mkdir /opt/vms
+#sudo lvcreate -L 50G -n kvm-isos vg0
+#sudo lvcreate -l 100%FREE -n kvm-vms vg0
+#sudo mkfs -t ext4 /dev/vg0/kvm-isos
+#sudo mkfs -t ext4 /dev/vg0/kvm-vms
+#sudo mkdir /opt/isos
+#sudo mkdir /opt/vms
 # check dm-X
-echo "/dev/disk/by-id/$(ls -la /dev/disk/by-id/ | grep dm-1 | grep uuid | awk '{print $9}') /opt/isos ext4 defaults 0 0 
-/dev/disk/by-id/$(ls -la /dev/disk/by-id/ | grep dm-2 | grep uuid | awk '{print $9}') /opt/vms ext4 defaults 0 0" 
-sudo vi /etc/fstab
-mount -a
+#echo "/dev/disk/by-id/$(ls -la /dev/disk/by-id/ | grep dm-1 | grep uuid | awk '{print $9}') /opt/isos ext4 defaults 0 0 
+#/dev/disk/by-id/$(ls -la /dev/disk/by-id/ | grep dm-2 | grep uuid | awk '{print $9}') /opt/vms ext4 defaults 0 0" 
+#sudo vi /etc/fstab
+#mount -a
 
 sudo wget https://opnsense.c0urier.net/releases/21.1/OPNsense-21.1-OpenSSL-dvd-amd64.iso.bz2 -O /opt/isos/OPNsense-21.1-OpenSSL-dvd-amd64.iso.bz2
 
