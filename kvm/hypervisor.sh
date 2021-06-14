@@ -67,7 +67,8 @@ virsh pool-start large
 #sudo vi /etc/fstab
 #mount -a
 
-sudo wget https://opnsense.c0urier.net/releases/21.1/OPNsense-21.1-OpenSSL-dvd-amd64.iso.bz2 -O /opt/isos/OPNsense-21.1-OpenSSL-dvd-amd64.iso.bz2
+wget https://opnsense.c0urier.net/releases/21.1/OPNsense-21.1-OpenSSL-dvd-amd64.iso.bz2
+bzip2 -d OPNsense-21.1-OpenSSL-dvd-amd64.iso.bz2
 
 sudo mv /etc/netplan/00-installer-config.yaml /etc/netplan/00-installer-config.yaml.orig
 sudo vi /etc/netplan/00-br-vlans-bond.yaml
