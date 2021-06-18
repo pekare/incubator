@@ -1,13 +1,15 @@
 # Disk setup
-## Disk 1
+## Disk 1 luks
 ### / 50GB on install
 ### /var/lib/libvirt 100%FREE
+## Disk 2 luks
+### /var/lib/libvirt/images-large 100%FREE
+
 
 # HPE drivers
 sudo vi /etc/apt/sources.list.d/mcp.list
 ## Management Component Pack
-deb http://sudo vi /etc/fstab
-mount -adownloads.linux.hpe.com/SDR/repo/mcp focal/current non-free
+deb http://downloads.linux.hpe.com/SDR/repo/mcp focal/current non-free
 sudo -i
 curl https://downloads.linux.hpe.com/SDR/hpPublicKey2048.pub | apt-key add -
 curl https://downloads.linux.hpe.com/SDR/hpPublicKey2048_key1.pub | apt-key add -
@@ -80,15 +82,13 @@ network:
       dhcp4: false
       dhcp6: false
       interfaces:
-      - eno1
-      - eno2
-      - eno3
-      - eno4
+      - ens1
+      - ens1d1
       link-local: []
       parameters:
         lacp-rate: fast
         mii-monitor-interval: 100
-        min-links: 2
+        min-links: 1
         mode: 802.3ad
   bridges:
     br10:
@@ -98,17 +98,11 @@ network:
       - vlan10
       link-local: []
     br11:
-      addresses:
-      - 10.0.11.4/24
       dhcp4: false
       dhcp6: false
-      gateway4: 10.0.11.254
       interfaces:
       - vlan11
       link-local: []
-      nameservers:
-        addresses:
-        - 10.0.11.254
     br12:
       dhcp4: false
       dhcp6: false
@@ -137,14 +131,30 @@ network:
     eno1:
       dhcp4: false
       dhcp6: false
+      addresses:
+      - 10.0.11.4/24
+      gateway4: 10.0.11.254
+      link-local: []
+      nameservers:
+        addresses:
+        - 10.0.11.254
     eno2:
       dhcp4: false
       dhcp6: false
+      optional: true
     eno3:
       dhcp4: false
       dhcp6: false
       optional: true
     eno4:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+    ens1:
+      dhcp4: false
+      dhcp6: false
+      optional: true
+    ens1d1:
       dhcp4: false
       dhcp6: false
       optional: true
